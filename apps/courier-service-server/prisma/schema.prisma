@@ -1,0 +1,74 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Settlement {
+  createdAt    DateTime @default(now())
+  district     String?
+  id           String   @id @default(cuid())
+  municipality String?
+  name         String?
+  offices      Office[]
+  postalCode   Int?
+  updatedAt    DateTime @updatedAt
+}
+
+model Office {
+  address          String?
+  cars             Car[]
+  couriers         Courier[]
+  createdAt        DateTime    @default(now())
+  hoursOfOperation String?
+  id               String      @id @default(cuid())
+  manager          String?
+  name             String?
+  phone            String?
+  settlement       Settlement? @relation(fields: [settlementId], references: [id])
+  settlementId     String?
+  updatedAt        DateTime    @updatedAt
+}
+
+model Car {
+  courier            Courier? @relation(fields: [courierId], references: [id])
+  courierId          String?
+  createdAt          DateTime @default(now())
+  fuelConsumption    Float?
+  id                 String   @id @default(cuid())
+  make               String?
+  model              String?
+  office             Office?  @relation(fields: [officeId], references: [id])
+  officeId           String?
+  registrationNumber String?
+  updatedAt          DateTime @updatedAt
+}
+
+model Courier {
+  cars           Car[]
+  createdAt      DateTime @default(now())
+  fullNames      String?
+  id             String   @id @default(cuid())
+  office         Office?  @relation(fields: [officeId], references: [id])
+  officeId       String?
+  password       String?
+  personalNumber String?
+  phone          String?
+  updatedAt      DateTime @updatedAt
+  username       String?
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
